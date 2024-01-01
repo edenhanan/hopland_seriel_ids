@@ -1,7 +1,36 @@
 import json
 import pandas as pd
+import tkinter as tk
+from tkinter import filedialog
 
-df = pd.read_excel('קטלוג.xlsx')
+from pandas.io.common import get_handle
+
+
+#  ask the user to select an .xlsx file and read it into a DataFrame
+# (use the read_excel function from the pandas library)
+
+
+def open_file():
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])  # Open the file dialog
+
+    if file_path != "":
+        # Now it's safe to pass file_path_or_buffer to get_handle or any other function
+        result = get_handle(file_path, mode="rb", encoding=None, compression=None, memory_map=False,)
+        return result
+    else:
+        print("Error: file_path_or_buffer is None")
+        return None
+
+
+xl_path = open_file()
+if xl_path is not None:
+    df = pd.read_excel(xl_path)
+else:
+    print("Error: xl_path is None")
+    exit(1)
+
 item_name = df.columns[2]
 supplier = df.columns[-1]
 main_category = df.columns[-3]
@@ -39,3 +68,4 @@ for i, row in df.iterrows():
     df.loc[i, 'id'] = create_id(row)
 
 print(df)
+df.to_excel('קטלוג עם קוד.xlsx', index=False)
